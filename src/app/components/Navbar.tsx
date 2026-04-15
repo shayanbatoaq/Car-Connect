@@ -11,6 +11,10 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  if (pathname === "/demo") {
+    return null;
+  }
+
   const scrollToSection = (id: string) => {
     if (pathname !== "/") {
       router.push(`/#${id}`);
@@ -39,7 +43,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
             <button
               type="button"
               onClick={() => scrollToSection("how-it-works")}
@@ -61,6 +65,12 @@ export function Navbar() {
             >
               Benefits
             </button>
+            <Link
+              href="/demo"
+              className="text-sm text-foreground/80 hover:text-foreground transition-colors"
+            >
+              Demo
+            </Link>
             <button
               type="button"
               onClick={() => scrollToSection("contact")}
@@ -71,7 +81,7 @@ export function Navbar() {
           </div>
 
           {/* Desktop CTA */}
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <motion.button
               type="button"
               whileHover={{ scale: 1.05 }}
@@ -87,7 +97,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
           >
             {mobileMenuOpen ? (
               <X className="w-6 h-6" />
@@ -103,7 +113,7 @@ export function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="md:hidden py-6 border-t border-border"
+            className="lg:hidden py-6 border-t border-border"
           >
             <div className="flex flex-col gap-4">
               <button
@@ -127,6 +137,13 @@ export function Navbar() {
               >
                 Benefits
               </button>
+              <Link
+                href="/demo"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 text-foreground/80 hover:text-foreground transition-colors"
+              >
+                Demo
+              </Link>
               <button
                 type="button"
                 onClick={() => scrollToSection("contact")}

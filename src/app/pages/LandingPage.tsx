@@ -10,8 +10,6 @@ import {
   Lightbulb,
   AlertTriangle,
   Phone,
-  Building,
-  ShoppingBag,
   Shield,
   PhoneOff,
   Users,
@@ -21,10 +19,44 @@ import {
   Wrench,
   Coffee,
   Activity,
-  Zap
+  Zap,
+  MessageCircle,
+  FileCheck2,
+  Smartphone
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Slider from "react-slick";
+
+const storySlides = [
+  {
+    type: "bad-parking",
+    eyebrow: "Blocked Parking",
+    title: "Someone needs the owner to move the car.",
+    text: "A quick scan helps the visitor reach the driver without exposing a private number.",
+    image: "/images/scenarios/bad-parking.png"
+  },
+  {
+    type: "lights-on",
+    eyebrow: "Lights Left On",
+    title: "Headlights are on and the owner should know.",
+    text: "Safe Safar makes it simple to send a useful alert before the battery drains.",
+    image: "/images/scenarios/headlights-left-on.png"
+  },
+  {
+    type: "emergency",
+    eyebrow: "Emergency Contact",
+    title: "A trusted contact can be reached when it matters.",
+    text: "Emergency contacts are available for urgent situations through a privacy-first flow.",
+    image: "/images/scenarios/emergency-contact.png"
+  },
+  {
+    type: "minor-accident",
+    eyebrow: "Minor Accident",
+    title: "A small incident still needs a fast response.",
+    text: "The QR page helps the person nearby contact the vehicle owner calmly and clearly.",
+    image: "/images/scenarios/minor-accident.png"
+  }
+] as const;
 
 export function LandingPage() {
   const router = useRouter();
@@ -57,11 +89,23 @@ export function LandingPage() {
       }
     ]
   };
+  const storyCarouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 650,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4200,
+    pauseOnHover: true,
+    arrows: true,
+    adaptiveHeight: false,
+  };
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden px-4 py-28 sm:px-6 md:px-12">
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1642622420476-a20517d3cab8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920"
@@ -71,7 +115,7 @@ export function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/60" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 text-center">
+        <div className="relative z-10 mx-auto max-w-7xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -81,23 +125,23 @@ export function LandingPage() {
               <span className="text-sm text-primary">Made for Karachi</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl mb-6 tracking-tight">
+            <h1 className="mb-6 text-4xl tracking-tight sm:text-5xl md:text-7xl lg:text-8xl">
               Park smarter.<br />
               Stay reachable.<br />
               <span className="text-primary">Stay safe.</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+            <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl md:mb-12 md:text-2xl">
               Connect without exposing your number
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <div className="mb-12 flex flex-col justify-center gap-4 sm:flex-row md:mb-16">
               <motion.button
                 type="button"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/signup")}
-                className="px-8 py-4 bg-accent text-accent-foreground rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-shadow"
+                className="w-full px-8 py-4 bg-accent text-accent-foreground rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-shadow sm:w-auto"
               >
                 Join Now
                 <ArrowRight className="w-5 h-5" />
@@ -106,7 +150,7 @@ export function LandingPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-                className="px-8 py-4 bg-white/80 backdrop-blur text-foreground rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow"
+                className="w-full px-8 py-4 bg-white/80 backdrop-blur text-foreground rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow sm:w-auto"
               >
                 See How It Works
               </motion.button>
@@ -116,7 +160,7 @@ export function LandingPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 1 }}
-              className="flex items-center justify-center gap-8 text-sm text-muted-foreground"
+              className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-muted-foreground"
             >
               <div className="flex items-center gap-2">
                 <Car className="w-4 h-4" />
@@ -151,7 +195,7 @@ export function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:px-12 md:py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -159,7 +203,7 @@ export function LandingPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-6xl mb-4">How It Works</h2>
+          <h2 className="text-3xl md:text-6xl mb-4">How It Works</h2>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
@@ -192,7 +236,7 @@ export function LandingPage() {
       </section>
 
       {/* Use Cases */}
-      <section id="use-cases" className="py-24 px-6 md:px-12 bg-secondary/50">
+      <section id="use-cases" className="px-4 py-16 sm:px-6 md:px-12 md:py-24 bg-secondary/50">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -201,17 +245,15 @@ export function LandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-6xl mb-4">When You Need It</h2>
+            <h2 className="text-3xl md:text-6xl mb-4">When You Need It</h2>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 md:grid-cols-4">
             {[
               { icon: Ban, label: "Blocked Parking" },
               { icon: Lightbulb, label: "Lights Left On" },
               { icon: AlertTriangle, label: "Minor Accident" },
-              { icon: Phone, label: "Emergency Contact" },
-              { icon: Building, label: "Apartment Parking" },
-              { icon: ShoppingBag, label: "Mall Parking" }
+              { icon: Phone, label: "Emergency Contact" }
             ].map((useCase, index) => (
               <motion.div
                 key={index}
@@ -220,7 +262,7 @@ export function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
                 whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-card rounded-3xl p-8 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-lg transition-all cursor-pointer border border-border/50"
+                className="min-h-36 bg-card rounded-3xl p-5 sm:p-8 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-lg transition-all cursor-pointer border border-border/50"
               >
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                   <useCase.icon className="w-8 h-8 text-primary" />
@@ -232,43 +274,83 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Why Karachi Needs This */}
-      <section className="py-24 px-6 md:px-12">
+      {/* Parking Tag Preview */}
+      <section className="overflow-hidden px-4 py-16 sm:px-6 md:px-12 md:py-24">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
+              className="relative lg:min-h-[560px]"
             >
-              <h2 className="text-4xl md:text-6xl mb-8">
-                A Smarter<br />
-                Karachi
-              </h2>
+              <div className="absolute inset-x-4 top-10 h-72 -rotate-12 bg-accent/20 sm:inset-x-10 lg:h-80" />
+              <div className="absolute inset-x-12 top-20 h-72 -rotate-12 bg-primary/10 sm:inset-x-24 lg:h-80" />
 
-              <div className="bg-accent/10 border border-accent/20 rounded-3xl p-8 mb-8">
-                <div className="flex items-start gap-4">
-                  <AlertTriangle className="w-8 h-8 text-accent flex-shrink-0 mt-1" />
-                  <div>
-                    <p className="text-2xl mb-2">Daily parking challenges</p>
-                    <p className="text-muted-foreground">Traffic congestion costs time, fuel, and peace of mind</p>
+              <div className="relative py-6 lg:pt-20">
+                <div className="hidden lg:block absolute left-4 top-0 max-w-64 text-lg leading-snug">
+                  Scan using any camera phone or smart QR reader.
+                </div>
+                <div className="hidden lg:block absolute left-64 top-10 h-28 w-48 rounded-br-3xl border-b-4 border-r-4 border-dotted border-primary/40" />
+
+                <div className="relative mx-auto max-w-2xl rounded-3xl border border-border/60 bg-card p-3 shadow-2xl sm:p-5">
+                  <div className="grid gap-5 md:grid-cols-[1fr_260px]">
+                    <div className="flex flex-col justify-between rounded-2xl bg-white p-5 sm:p-6">
+                      <div>
+                        <div className="mb-4 flex items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
+                            <QrCode className="h-7 w-7 text-white" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-2xl tracking-tight sm:text-4xl">Safe Safar</p>
+                            <p className="text-xs text-muted-foreground">Vehicle privacy tag</p>
+                          </div>
+                        </div>
+                        <p className="text-2xl leading-tight sm:text-3xl md:text-4xl">
+                          Scan the code to contact the vehicle owner.
+                        </p>
+                      </div>
+
+                      <div className="mt-8 border-t border-dashed border-border pt-4">
+                        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                          Wrong parking, emergency contact, any issue with the vehicle.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl bg-accent/10 p-5">
+                      <div className="mb-5 rounded-2xl bg-white p-4 shadow-sm">
+                        <div className="flex aspect-square items-center justify-center rounded-xl border-4 border-primary/20 bg-white">
+                          <QrCode className="h-28 w-28 text-foreground sm:h-36 sm:w-36" />
+                        </div>
+                        <div className="mt-3 flex items-center justify-between">
+                          <p className="text-sm text-muted-foreground">Scan ID</p>
+                          <p className="text-sm text-accent">SS132</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-4 gap-2 text-primary sm:gap-3">
+                        {[Lightbulb, Ban, AlertTriangle, Phone].map((Icon, index) => (
+                          <div
+                            key={index}
+                            className="flex h-10 items-center justify-center rounded-xl bg-white sm:h-12"
+                          >
+                            <Icon className="h-6 w-6" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <Sparkles className="w-6 h-6 text-primary" />
-                  <p className="text-lg">A step toward digitalization</p>
+                <div className="hidden lg:block absolute bottom-8 left-0 h-24 w-72 rounded-bl-3xl border-b-4 border-l-4 border-dotted border-primary/40" />
+                <div className="hidden lg:block absolute bottom-0 left-24 text-lg">
+                  Scan and send a clear message.
                 </div>
-                <div className="flex items-center gap-4">
-                  <Zap className="w-6 h-6 text-primary" />
-                  <p className="text-lg">Solving real problems</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Users className="w-6 h-6 text-primary" />
-                  <p className="text-lg">Community-powered solution</p>
+                <div className="hidden lg:block absolute right-0 top-32 h-28 w-40 rounded-tr-3xl border-r-4 border-t-4 border-dotted border-primary/40" />
+                <div className="hidden lg:block absolute right-0 top-24 text-lg">
+                  Safe Safar branding.
                 </div>
               </div>
             </motion.div>
@@ -278,81 +360,124 @@ export function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="relative"
             >
-              <img
-                src="https://images.unsplash.com/photo-1753697540818-084c98556401?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                alt="Karachi traffic aerial view"
-                className="rounded-3xl shadow-2xl w-full"
-              />
+              <p className="mb-4 text-sm uppercase tracking-[0.25em] text-muted-foreground">
+                Car and bike parking tag
+              </p>
+              <h2 className="mb-10 text-3xl sm:text-4xl md:text-6xl">
+                Privacy and security at its best, Safe Safar parking tag.
+              </h2>
+
+              <div className="grid gap-8 sm:grid-cols-2">
+                {[
+                  {
+                    icon: Shield,
+                    title: "Private Contact",
+                    text: "Your contact details stay hidden when someone reaches you."
+                  },
+                  {
+                    icon: MessageCircle,
+                    title: "WhatsApp Update",
+                    text: "Receive updates through WhatsApp, SMS, or masked call alerts."
+                  },
+                  {
+                    icon: FileCheck2,
+                    title: "Upload Files",
+                    text: "Keep vehicle documents attached and accessible with OTP."
+                  },
+                  {
+                    icon: Smartphone,
+                    title: "Emergency Call",
+                    text: "Add emergency contact details for urgent parking situations."
+                  }
+                ].map((feature, index) => (
+                  <div key={feature.title} className="flex gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent/10">
+                      <feature.icon className="h-6 w-6 text-accent" />
+                    </div>
+                    <div>
+                      <h3 className="mb-2 text-lg">
+                        <span className="text-accent">{index + 1}. </span>
+                        {feature.title}
+                      </h3>
+                      <p className="text-muted-foreground">{feature.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => router.push("/signup")}
+                className="mt-10 flex w-full items-center justify-center gap-2 rounded-2xl bg-accent px-8 py-4 text-accent-foreground shadow-lg transition-shadow hover:shadow-xl"
+              >
+                Get Your Tag
+                <ArrowRight className="h-5 w-5" />
+              </motion.button>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Revolutionary Idea */}
-      <section className="py-24 px-6 md:px-12 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5">
-        <div className="max-w-7xl mx-auto">
+      {/* Scenario Illustrations Slider */}
+      <section className="px-4 py-16 sm:px-6 md:px-12 md:py-24 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5">
+        <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="mx-auto mb-12 max-w-3xl text-center md:mb-16"
           >
-            <h2 className="text-4xl md:text-6xl mb-4">Revolutionary for Karachi</h2>
+            <h2 className="mb-4 text-3xl md:text-6xl">Real Situations, Faster Help</h2>
+            <p className="text-lg text-muted-foreground md:text-xl">
+              Large visual stories that show when a Safe Safar QR code becomes useful.
+            </p>
           </motion.div>
 
-          <div className="relative flex items-center justify-center min-h-[400px]">
-            <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, type: "spring" }}
-              className="w-40 h-40 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center text-white relative z-10 shadow-2xl"
-            >
-              <QrCode className="w-20 h-20" />
-            </motion.div>
-
-            {[
-              { icon: Sparkles, label: "Revolutionary", angle: 0, delay: 0.2 },
-              { icon: Activity, label: "Smarter streets", angle: 72, delay: 0.3 },
-              { icon: Zap, label: "Digital connection", angle: 144, delay: 0.4 },
-              { icon: Users, label: "Community", angle: 216, delay: 0.5 },
-              { icon: Shield, label: "Safe & Secure", angle: 288, delay: 0.6 }
-            ].map((item, index) => {
-              const radius = 200;
-              const angleRad = (item.angle * Math.PI) / 180;
-              const x = Math.cos(angleRad) * radius;
-              const y = Math.sin(angleRad) * radius;
-
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: item.delay }}
-                  className="absolute"
-                  style={{
-                    left: '50%',
-                    top: '50%',
-                    transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`
-                  }}
-                >
-                  <div className="bg-card rounded-2xl p-6 shadow-lg border border-border/50 flex flex-col items-center gap-2 min-w-[120px]">
-                    <item.icon className="w-8 h-8 text-primary" />
-                    <p className="text-xs text-center">{item.label}</p>
+          <Slider {...storyCarouselSettings} className="scenario-slider">
+            {storySlides.map((slide) => (
+              <div key={slide.type} className="px-1 sm:px-3">
+                <div className="grid min-h-[620px] overflow-hidden rounded-3xl border border-border/50 bg-card shadow-2xl shadow-primary/5 lg:grid-cols-[1.05fr_0.95fr]">
+                  <div className="flex min-h-[330px] items-center justify-center bg-secondary/40 p-3 sm:min-h-[440px] sm:p-6 lg:min-h-[620px]">
+                    <img
+                      src={slide.image}
+                      alt={`${slide.eyebrow} illustration`}
+                      className="h-full w-full rounded-3xl object-contain"
+                    />
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
+
+                  <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
+                    <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-2 text-sm text-accent">
+                      <QrCode className="h-4 w-4" />
+                      <span>{slide.eyebrow}</span>
+                    </div>
+                    <h3 className="mb-5 text-3xl tracking-tight sm:text-4xl lg:text-5xl">
+                      {slide.title}
+                    </h3>
+                    <p className="mb-8 text-lg text-muted-foreground">{slide.text}</p>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl border border-border/50 bg-secondary/40 p-4">
+                        <Phone className="mb-3 h-6 w-6 text-accent" />
+                        <p className="text-sm text-muted-foreground">Contact owner privately</p>
+                      </div>
+                      <div className="rounded-2xl border border-border/50 bg-secondary/40 p-4">
+                        <Shield className="mb-3 h-6 w-6 text-accent" />
+                        <p className="text-sm text-muted-foreground">Number stays protected</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Slider>
         </div>
       </section>
 
       {/* Safety for Loved Ones */}
-      <section className="py-24 px-6 md:px-12">
+      <section className="px-4 py-16 sm:px-6 md:px-12 md:py-24">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -374,7 +499,7 @@ export function LandingPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl md:text-6xl mb-8">
+              <h2 className="text-3xl md:text-6xl mb-8">
                 Peace of Mind
               </h2>
 
@@ -412,7 +537,7 @@ export function LandingPage() {
       </section>
 
       {/* Privacy Section */}
-      <section className="py-24 px-6 md:px-12 bg-secondary/50">
+      <section className="px-4 py-16 sm:px-6 md:px-12 md:py-24 bg-secondary/50">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -425,8 +550,8 @@ export function LandingPage() {
               <div className="absolute inset-0 rounded-full border-4 border-dashed border-primary/30 animate-spin" style={{ animationDuration: '8s' }} />
             </div>
 
-            <h2 className="text-4xl md:text-6xl mb-6">Your Number Stays Private</h2>
-            <p className="text-2xl text-muted-foreground mb-8">Contact without exposing your number</p>
+            <h2 className="text-3xl md:text-6xl mb-6">Your Number Stays Private</h2>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8">Contact without exposing your number</p>
 
             <div className="grid md:grid-cols-3 gap-6 mt-12">
               <div className="bg-card rounded-2xl p-6 border border-border/50">
@@ -447,7 +572,7 @@ export function LandingPage() {
       </section>
 
       {/* Cooperation / Community */}
-      <section className="py-24 px-6 md:px-12">
+      <section className="px-4 py-16 sm:px-6 md:px-12 md:py-24">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -455,8 +580,8 @@ export function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl md:text-6xl mb-6">A Connected City</h2>
-            <p className="text-2xl text-muted-foreground mb-16">Small cooperation, big impact</p>
+            <h2 className="text-3xl md:text-6xl mb-6">A Connected City</h2>
+            <p className="mb-10 text-xl text-muted-foreground md:mb-16 md:text-2xl">Small cooperation, big impact</p>
 
             <div className="relative max-w-4xl mx-auto">
               <img
@@ -466,7 +591,7 @@ export function LandingPage() {
               />
 
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="grid grid-cols-3 gap-8">
+                <div className="grid grid-cols-3 gap-3 sm:gap-8">
                   {[...Array(9)].map((_, i) => (
                     <motion.div
                       key={i}
@@ -474,9 +599,9 @@ export function LandingPage() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.4, delay: i * 0.1 }}
-                      className="w-12 h-12 rounded-full bg-accent flex items-center justify-center shadow-lg"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-accent shadow-lg sm:h-12 sm:w-12"
                     >
-                      <Users className="w-6 h-6 text-white" />
+                      <Users className="h-5 w-5 text-white sm:h-6 sm:w-6" />
                     </motion.div>
                   ))}
                 </div>
@@ -487,7 +612,7 @@ export function LandingPage() {
       </section>
 
       {/* Benefits Slider */}
-      <section id="benefits" className="py-24 px-6 md:px-12 bg-gradient-to-br from-accent/10 to-primary/10">
+      <section id="benefits" className="px-4 py-16 sm:px-6 md:px-12 md:py-24 bg-gradient-to-br from-accent/10 to-primary/10">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -496,7 +621,7 @@ export function LandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-6xl mb-4">More Than Safety</h2>
+            <h2 className="text-3xl md:text-6xl mb-4">More Than Safety</h2>
             <p className="text-xl text-muted-foreground">Real benefits, real savings</p>
           </motion.div>
 
@@ -532,7 +657,7 @@ export function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-32 px-6 md:px-12 bg-gradient-to-br from-primary to-primary/80 text-white">
+      <section className="px-4 py-20 sm:px-6 md:px-12 md:py-32 bg-gradient-to-br from-primary to-primary/80 text-white">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -540,7 +665,7 @@ export function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl md:text-7xl mb-8">Join Safe Safar Today</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-7xl mb-8">Join Safe Safar Today</h2>
             <p className="text-xl md:text-2xl mb-12 opacity-90">Be part of the solution. Make Karachi smarter.</p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -549,7 +674,7 @@ export function LandingPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/signup")}
-                className="px-10 py-5 bg-white text-primary rounded-2xl shadow-2xl hover:shadow-3xl transition-shadow flex items-center justify-center gap-2"
+                className="w-full px-10 py-5 bg-white text-primary rounded-2xl shadow-2xl hover:shadow-3xl transition-shadow flex items-center justify-center gap-2 sm:w-auto"
               >
                 Join Now
                 <ArrowRight className="w-5 h-5" />
@@ -558,7 +683,7 @@ export function LandingPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                className="px-10 py-5 bg-white/10 backdrop-blur text-white rounded-2xl border-2 border-white/30 hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                className="w-full px-10 py-5 bg-white/10 backdrop-blur text-white rounded-2xl border-2 border-white/30 hover:bg-white/20 transition-all flex items-center justify-center gap-2 sm:w-auto"
               >
                 Contact Support
                 <Phone className="w-5 h-5" />
@@ -570,6 +695,37 @@ export function LandingPage() {
 
       {/* Custom Slider Styles */}
       <style>{`
+        .scenario-slider .slick-list {
+          overflow: visible;
+        }
+        .scenario-slider .slick-dots {
+          bottom: -42px;
+        }
+        .scenario-slider .slick-dots li button:before {
+          color: #7e7e7e;
+          font-size: 10px;
+        }
+        .scenario-slider .slick-dots li.slick-active button:before {
+          color: #22c55e;
+        }
+        .scenario-slider .slick-prev,
+        .scenario-slider .slick-next {
+          z-index: 2;
+          width: 44px;
+          height: 44px;
+        }
+        .scenario-slider .slick-prev {
+          left: -18px;
+        }
+        .scenario-slider .slick-next {
+          right: -18px;
+        }
+        .scenario-slider .slick-prev:before,
+        .scenario-slider .slick-next:before {
+          color: #22c55e;
+          font-size: 34px;
+          opacity: 1;
+        }
         .benefits-slider .slick-dots {
           bottom: -40px;
         }
@@ -596,11 +752,16 @@ export function LandingPage() {
           font-size: 30px;
         }
         @media (max-width: 768px) {
-          .benefits-slider .slick-prev {
-            left: -20px;
+          .scenario-slider .slick-list {
+            overflow: hidden;
           }
+          .scenario-slider .slick-prev,
+          .scenario-slider .slick-next {
+            display: none !important;
+          }
+          .benefits-slider .slick-prev,
           .benefits-slider .slick-next {
-            right: -20px;
+            display: none !important;
           }
         }
       `}</style>

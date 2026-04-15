@@ -39,12 +39,12 @@ export function SignupPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6 py-24 bg-gradient-to-br from-accent/10 to-primary/10">
+      <div className="min-h-screen flex items-center justify-center px-4 py-24 sm:px-6 bg-gradient-to-br from-accent/10 to-primary/10">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="max-w-md w-full bg-card rounded-3xl shadow-2xl p-12 text-center border border-border/50"
+          className="max-w-md w-full bg-card rounded-3xl shadow-2xl p-6 text-center border border-border/50 sm:p-12"
         >
           <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-accent" />
@@ -70,7 +70,7 @@ export function SignupPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background">
-      <div className="max-w-7xl mx-auto px-6 py-24 lg:py-32">
+      <div className="max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:py-32">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Side - Illustration/Info */}
           <motion.div
@@ -135,10 +135,10 @@ export function SignupPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="bg-card rounded-3xl shadow-2xl p-8 lg:p-12 border border-border/50">
+            <div className="bg-card rounded-3xl shadow-2xl p-5 sm:p-8 lg:p-12 border border-border/50">
               {/* Mobile Title */}
               <div className="lg:hidden mb-8">
-                <h1 className="text-4xl mb-4">Join Safe Safar</h1>
+                <h1 className="text-3xl sm:text-4xl mb-4">Join Safe Safar</h1>
                 <p className="text-muted-foreground">Fill in your details to get started</p>
               </div>
 

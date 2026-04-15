@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="min-h-screen bg-background text-foreground">
+        <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
           <Navbar />
           {children}
           <Footer />

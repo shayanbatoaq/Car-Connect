@@ -1,7 +1,16 @@
+"use client";
+
 import { QrCode, Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (pathname === "/demo") {
+    return null;
+  }
+
   return (
     <footer id="contact" className="bg-primary text-white py-16 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
@@ -43,15 +52,15 @@ export function Footer() {
             <h3 className="mb-4">Contact</h3>
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2 text-white/70">
-                <Mail className="w-4 h-4" />
-                <span className="text-sm">hello@safesafar.pk</span>
+                <Mail className="w-4 h-4 shrink-0" />
+                <span className="break-all text-sm">hello@safesafar.pk</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
-                <Phone className="w-4 h-4" />
+                <Phone className="w-4 h-4 shrink-0" />
                 <span className="text-sm">+92 300 1234567</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
-                <MapPin className="w-4 h-4" />
+                <MapPin className="w-4 h-4 shrink-0" />
                 <span className="text-sm">Karachi, Pakistan</span>
               </div>
             </div>
