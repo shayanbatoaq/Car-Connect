@@ -50,9 +50,9 @@ const storySlides = [
     image: "/images/scenarios/emergency-contact.png"
   },
   {
-    type: "minor-accident",
-    eyebrow: "Minor Accident",
-    title: "A small incident still needs a fast response.",
+    type: "major-accident",
+    eyebrow: "Major Accident",
+    title: "An incident needs a fast response.",
     text: "The QR page helps the person nearby contact the vehicle owner calmly and clearly.",
     image: "/images/scenarios/minor-accident.png"
   }
@@ -252,7 +252,7 @@ export function LandingPage() {
             {[
               { icon: Ban, label: "Blocked Parking" },
               { icon: Lightbulb, label: "Lights Left On" },
-              { icon: AlertTriangle, label: "Minor Accident" },
+              { icon: AlertTriangle, label: "Major Accident" },
               { icon: Phone, label: "Emergency Contact" }
             ].map((useCase, index) => (
               <motion.div
@@ -476,21 +476,44 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Safety for Loved Ones */}
-      <section className="px-4 py-16 sm:px-6 md:px-12 md:py-24">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+      {/* Smarter Karachi */}
+      <section className="px-4 py-16 sm:px-6 md:px-12 md:py-24 bg-secondary/50">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <img
-                src="https://images.unsplash.com/photo-1770732165507-ca1a4c19f31a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                alt="Family safety"
-                className="rounded-3xl shadow-2xl w-full"
-              />
+              <p className="mb-4 text-sm uppercase tracking-[0.25em] text-muted-foreground">
+                Community parking network
+              </p>
+              <h2 className="mb-6 text-3xl sm:text-4xl md:text-6xl">A smarter Karachi</h2>
+              <p className="mb-8 text-lg leading-relaxed text-muted-foreground md:text-xl">
+                Safe Safar turns everyday parking moments into a calmer citywide habit: scan,
+                notify, and help the right person take action without exposing private numbers.
+              </p>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                {[
+                  { value: "400+", label: "Road accidents take place in Karachi daily" },
+                  { value: "0", label: "Phone numbers shown publicly" },
+                  { value: "24/7", label: "Vehicle help when it matters" }
+                ].map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.08 }}
+                    className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm"
+                  >
+                    <p className="mb-2 text-3xl text-primary">{stat.value}</p>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
 
             <motion.div
@@ -498,40 +521,141 @@ export function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
+              className="relative overflow-hidden rounded-3xl border border-border/50 bg-card p-5 shadow-2xl shadow-primary/5 sm:p-8"
             >
-              <h2 className="text-3xl md:text-6xl mb-8">
-                Peace of Mind
-              </h2>
+              <div className="absolute right-8 top-8 h-24 w-24 rounded-full border border-primary/20" />
+              <div className="absolute bottom-10 left-8 h-16 w-16 rounded-full bg-accent/10" />
 
-              <div className="space-y-8">
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <Shield className="w-8 h-8 text-accent" />
-                  </div>
-                  <div>
-                    <p className="text-xl mb-2">Stay reachable when it matters</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-8 h-8 text-accent" />
-                  </div>
-                  <div>
-                    <p className="text-xl mb-2">Your family can reach you</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <AlertTriangle className="w-8 h-8 text-accent" />
-                  </div>
-                  <div>
-                    <p className="text-xl mb-2">Quick notifications for urgent situations</p>
-                  </div>
-                </div>
+              <div className="relative grid gap-5 sm:grid-cols-2">
+                {[
+                  {
+                    icon: QrCode,
+                    title: "Scan",
+                    text: "A driver, guard, or passerby scans the Safe Safar tag."
+                  },
+                  {
+                    icon: MessageCircle,
+                    title: "Notify",
+                    text: "The owner gets a clear alert for the parking issue."
+                  },
+                  {
+                    icon: Shield,
+                    title: "Protect",
+                    text: "Private contact details stay hidden during the exchange."
+                  },
+                  {
+                    icon: Users,
+                    title: "Resolve",
+                    text: "Small actions keep streets, homes, and workplaces moving."
+                  }
+                ].map((item, index) => (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, scale: 0.94 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.45, delay: index * 0.08 }}
+                    className="min-h-44 rounded-2xl border border-border/50 bg-white p-6"
+                  >
+                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+                      <item.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="mb-2 text-xl">{item.title}</h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{item.text}</p>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Karachi Needs It */}
+      <section className="px-4 py-16 sm:px-6 md:px-12 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mx-auto mb-12 max-w-3xl text-center md:mb-16"
+          >
+            <p className="mb-4 text-sm uppercase tracking-[0.25em] text-muted-foreground">
+              Why Karachi needs it
+            </p>
+            <h2 className="mb-5 text-3xl md:text-6xl">Safer contact when every second matters</h2>
+            <p className="text-lg text-muted-foreground md:text-xl">
+              Safe Safar gives people nearby a simple way to alert the right person while keeping
+              private phone numbers hidden.
+            </p>
+          </motion.div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {[
+              {
+                icon: AlertTriangle,
+                stat: "400+",
+                text: "Road accidents everyday",
+                image: "/images/karachi-road-accidents.png",
+                alt: "Road accident response illustration"
+              },
+              {
+                icon: Users,
+                stat: "500+",
+                text: "People injured daily",
+                image: "/images/karachi-people-injured.png",
+                alt: "Emergency contact illustration"
+              },
+              {
+                icon: Phone,
+                stat: "5+",
+                text: "Deaths daily",
+                image: "/images/karachi-deaths-daily.png",
+                alt: "Fatal road accident illustration"
+              },
+              {
+                icon: Shield,
+                stat: "Hidden",
+                text: "Safe contact with number protected",
+                image: "/images/safe-contact-number-hidden.png",
+                alt: "Private vehicle contact illustration"
+              }
+            ].map((item, index) => (
+              <motion.div
+                key={item.text}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.55, delay: index * 0.08 }}
+                className="group overflow-hidden rounded-3xl border border-border/50 bg-card shadow-xl shadow-primary/5 transition-shadow duration-300 hover:shadow-2xl"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden bg-white">
+                  <img
+                    src={item.image}
+                    alt={item.alt}
+                    className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent" />
+                  <div className="absolute left-5 top-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/90 shadow-lg backdrop-blur">
+                    <item.icon className="h-6 w-6 text-accent" />
+                  </div>
+                </div>
+
+                <div className="flex min-h-32 items-center gap-5 border-t border-border/50 bg-white p-5 sm:p-6">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:h-20 sm:w-20">
+                    <span className="text-2xl sm:text-3xl">{item.stat}</span>
+                  </div>
+                  <div>
+                    <p className="text-xl leading-snug text-foreground sm:text-2xl">{item.text}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {index === 3
+                        ? "Safe Safar lets people reach the vehicle owner without revealing a private number."
+                        : "A nearby scan can help the right person respond faster and more calmly."}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
