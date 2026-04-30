@@ -7,8 +7,8 @@ export function MobileBottomBar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Don't show on signup page
-  if (pathname === "/signup" || pathname === "/demo") {
+  // Don't show on focused full-screen style flows
+  if (pathname === "/signup" || pathname === "/demo" || pathname === "/scan") {
     return null;
   }
 
@@ -45,7 +45,11 @@ export function MobileBottomBar() {
             <ArrowRight className="w-4 h-4 shrink-0" />
             <span className="truncate">Join Now</span>
           </button>
-          <button type="button" className="min-w-0 py-3 px-2 sm:px-4 bg-primary text-primary-foreground rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => router.push("/scan")}
+            className="min-w-0 py-3 px-2 sm:px-4 bg-primary text-primary-foreground rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2"
+          >
             <Scan className="w-4 h-4 shrink-0" />
             <span className="truncate">Scan</span>
           </button>
