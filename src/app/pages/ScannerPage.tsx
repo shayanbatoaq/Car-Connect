@@ -134,11 +134,16 @@ function extractToken(value: string) {
 }
 
 function routeFromWebsiteUrl(url: URL) {
-  if (url.host !== window.location.host) {
-    return null;
+  const vehicleMatch = url.pathname.match(/^\/vehicle\/([^/?#]+)\/?$/);
+  const token = cleanToken(vehicleMatch?.[1] ? decodeURIComponent(vehicleMatch[1]) : null);
+
+  if (token) {
+    return `/vehicle/${encodeURIComponent(token)}`;
   }
 
-  return `${url.pathname}${url.search}${url.hash}`;
+  return url.host === window.location.host
+    ? `${url.pathname}${url.search}${url.hash}`
+    : null;
 }
 
 function resolveScannedDestination(rawValue: string) {
