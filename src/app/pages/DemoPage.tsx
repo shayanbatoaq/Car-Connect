@@ -7,12 +7,10 @@ import {
   CheckCircle2,
   ChevronDown,
   Droplets,
-  HeartHandshake,
   Lock,
   Mail,
   MapPin,
   Palette,
-  Phone,
   Shield,
   Siren,
   User,
@@ -28,33 +26,24 @@ const mockOwner = {
   carModel: "Corolla Altis",
   numberPlate: "ABC-123",
   city: "Karachi",
-  privatePhone: "+920000000000",
 };
 
 const emergencyContacts = [
   {
     name: "Ahmed Khan",
     relation: "Brother",
-    phone: "+920000000001",
-    whatsapp: "+920000000001",
   },
   {
     name: "Sara Khan",
     relation: "Wife",
-    phone: "+920000000002",
-    whatsapp: "+920000000002",
   },
   {
     name: "Hamza Malik",
     relation: "Friend",
-    phone: "+920000000003",
-    whatsapp: "+920000000003",
   },
   {
     name: "Imran Shah",
     relation: "Driver / Assistant",
-    phone: "+920000000004",
-    whatsapp: "+920000000004",
   },
 ];
 
@@ -66,8 +55,6 @@ const ownerFields = [
   { icon: Droplets, label: "Car Model", value: mockOwner.carModel },
   { icon: MapPin, label: "City", value: mockOwner.city },
 ];
-
-const toWhatsAppLink = (phone: string) => `https://wa.me/${phone.replace(/\D/g, "")}`;
 
 export function DemoPage() {
   const [showEmergencyContacts, setShowEmergencyContacts] = useState(false);
@@ -157,16 +144,16 @@ export function DemoPage() {
               className="mt-5 rounded-3xl border border-border/60 bg-white/80 p-4 shadow-xl shadow-primary/5 backdrop-blur sm:p-6"
             >
               <div className="grid gap-3 sm:grid-cols-2">
-                <motion.a
-                  href={`tel:${mockOwner.privatePhone}`}
+                <motion.button
+                  type="button"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  aria-label="Call owner"
+                  aria-label="Send contact request"
                   className="flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-accent px-6 py-4 text-accent-foreground shadow-lg shadow-accent/20 transition-shadow hover:shadow-xl"
                 >
-                  <Phone className="h-5 w-5" />
-                  <span>Call Owner</span>
-                </motion.a>
+                  <Lock className="h-5 w-5" />
+                  <span>Contact Request</span>
+                </motion.button>
 
                 <motion.button
                   type="button"
@@ -188,7 +175,7 @@ export function DemoPage() {
               </div>
 
               <p className="mt-4 text-center text-sm text-muted-foreground">
-                Your call will connect without displaying the private number.
+                Requests are sent without displaying private numbers.
               </p>
             </motion.section>
 
@@ -213,7 +200,7 @@ export function DemoPage() {
                           Emergency Contacts
                         </h2>
                         <p className="text-sm text-muted-foreground">
-                          Tap to call emergency contact. Numbers remain hidden in this template.
+                          Numbers remain hidden in this template.
                         </p>
                       </div>
                     </div>
@@ -236,25 +223,8 @@ export function DemoPage() {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-2">
-                            <a
-                              href={`tel:${contact.phone}`}
-                              aria-label={`Call ${contact.name}`}
-                              className="flex items-center justify-center gap-2 rounded-xl bg-accent px-3 py-3 text-sm text-accent-foreground transition-opacity hover:opacity-90"
-                            >
-                              <Phone className="h-4 w-4" />
-                              <span>Call</span>
-                            </a>
-                            <a
-                              href={toWhatsAppLink(contact.whatsapp)}
-                              target="_blank"
-                              rel="noreferrer"
-                              aria-label={`Open WhatsApp for ${contact.name}`}
-                              className="flex items-center justify-center gap-2 rounded-xl border border-accent/20 bg-accent/10 px-3 py-3 text-sm text-accent transition-colors hover:bg-accent/15"
-                            >
-                              <HeartHandshake className="h-4 w-4" />
-                              <span>WhatsApp</span>
-                            </a>
+                          <div className="rounded-xl border border-accent/20 bg-accent/10 px-3 py-3 text-center text-sm text-accent">
+                            Phone number protected by Safe Safar
                           </div>
                         </article>
                       ))}

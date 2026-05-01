@@ -27,6 +27,13 @@ type ScannerState = "idle" | "requesting" | "scanning" | "success" | "error";
 type CameraDevice = { id: string; label: string };
 type Html5QrcodeModule = typeof import("html5-qrcode");
 type Html5QrcodeInstance = InstanceType<Html5QrcodeModule["Html5Qrcode"]>;
+type PlateSearchResult = {
+  token: string;
+  carBrand: string;
+  carModel: string;
+  carColor: string;
+  numberPlate: string;
+};
 
 const scannerMessages: Record<Exclude<ScannerState, "idle">, string> = {
   requesting: "Camera permission required",
@@ -623,28 +630,67 @@ function PlateSearchCard() {
   const router = useRouter();
   const [plate, setPlate] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [matches, setMatches] = useState<PlateSearchResult[]>([]);
 
   const normalizedPlate = plate.trim();
 
   const handlePlateChange = (value: string) => {
     const nextValue = value.toUpperCase().replace(/\s+/g, "").replace(/[^A-Z0-9-]/g, "");
     setPlate(nextValue);
+    setMatches([]);
 
     if (error) {
       setError(null);
     }
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setMatches([]);
 
     if (!normalizedPlate) {
       setError("Please enter a number plate");
       return;
     }
 
-    console.log("Safe Safar plate search:", normalizedPlate);
-    router.push(`/vehicle/search?plate=${encodeURIComponent(normalizedPlate)}`);
+    setIsSearching(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/vehicle/search?plate=${encodeURIComponent(normalizedPlate)}`
+      );
+      const result = await response.json().catch(() => ({}));
+
+      if (response.status === 404) {
+        setError("No active Safe Safar vehicle found for this number plate.");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(result.error ?? "Search failed. Please try again.");
+      }
+
+      const results = Array.isArray(result.results)
+        ? (result.results as PlateSearchResult[])
+        : [];
+
+      if (result.token || results.length === 1) {
+        router.push(`/vehicle/${encodeURIComponent(result.token ?? results[0].token)}`);
+        return;
+      }
+
+      setMatches(results);
+    } catch (searchError) {
+      setError(
+        searchError instanceof Error
+          ? searchError.message
+          : "Search failed. Please try again."
+      );
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -703,12 +749,37 @@ function PlateSearchCard() {
           type="submit"
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
-          className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-accent px-5 text-accent-foreground shadow-lg shadow-accent/20 transition-shadow hover:shadow-xl"
+          disabled={isSearching}
+          className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-accent px-5 text-accent-foreground shadow-lg shadow-accent/20 transition-shadow hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-70"
         >
           <Search className="h-5 w-5" />
-          <span>Find Vehicle</span>
+          <span>{isSearching ? "Searching..." : "Find Vehicle"}</span>
         </motion.button>
       </form>
+
+      {matches.length > 1 && (
+        <div className="mt-4 space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Multiple active vehicles found. Select the matching vehicle.
+          </p>
+          {matches.map((match) => (
+            <button
+              key={match.token}
+              type="button"
+              onClick={() => router.push(`/vehicle/${encodeURIComponent(match.token)}`)}
+              className="flex w-full items-center justify-between gap-4 rounded-2xl border border-border/70 bg-secondary/40 p-4 text-left transition-colors hover:bg-secondary"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-base">
+                  {match.carColor} {match.carBrand} {match.carModel}
+                </p>
+                <p className="text-sm text-muted-foreground">{match.numberPlate}</p>
+              </div>
+              <ArrowLeft className="h-4 w-4 rotate-180 text-primary" />
+            </button>
+          ))}
+        </div>
+      )}
     </motion.section>
   );
 }

@@ -11,7 +11,7 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  if (pathname === "/demo") {
+  if (pathname === "/demo" || pathname.startsWith("/vehicle") || pathname === "/admin") {
     return null;
   }
 

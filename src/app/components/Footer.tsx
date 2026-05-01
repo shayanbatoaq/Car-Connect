@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 export function Footer() {
   const pathname = usePathname();
 
-  if (pathname === "/demo") {
+  if (pathname === "/demo" || pathname.startsWith("/vehicle") || pathname === "/admin") {
     return null;
   }
 
@@ -69,7 +69,7 @@ export function Footer() {
 
         {/* Bottom */}
         <div className="pt-8 border-t border-white/10 text-center text-white/50 text-sm">
-          <p>Â© 2026 Safe Safar. Made for Karachi with care.</p>
+          <p>© 2026 Safe Safar. Made for Karachi with care.</p>
         </div>
       </div>
     </footer>

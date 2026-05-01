@@ -8,7 +8,14 @@ export function MobileBottomBar() {
   const router = useRouter();
 
   // Don't show on focused full-screen style flows
-  if (pathname === "/signup" || pathname === "/demo" || pathname === "/scan") {
+  if (
+    pathname === "/signup" ||
+    pathname === "/demo" ||
+    pathname === "/scan" ||
+    pathname === "/admin" ||
+    pathname.startsWith("/vehicle") ||
+    pathname.startsWith("/order-confirmation")
+  ) {
     return null;
   }
 
