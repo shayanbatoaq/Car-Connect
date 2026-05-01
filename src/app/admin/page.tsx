@@ -6,9 +6,12 @@ import {
   Lock,
   PackageCheck,
   RefreshCw,
+  Search,
   ShieldCheck,
+  Trash2,
+  X,
 } from "lucide-react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 const ADMIN_STATUSES = [
   "pending",
@@ -76,13 +79,52 @@ function formatPaymentMethod(value: string) {
   return value === "cash_on_delivery" ? "Cash on Delivery" : value;
 }
 
+function getOrderSearchText(order: AdminOrder) {
+  return [
+    order.id,
+    order.orderStatus,
+    order.subscriptionStatus,
+    order.paymentMethod,
+    order.city,
+    order.postcode,
+    order.addressLine1,
+    order.addressLine2,
+    order.customer?.full_name,
+    order.customer?.email,
+    order.customer?.phone,
+    order.vehicle?.car_color,
+    order.vehicle?.car_brand,
+    order.vehicle?.car_model,
+    order.vehicle?.number_plate,
+    ...order.emergencyContacts.flatMap((contact) => [
+      contact.name,
+      contact.relationship,
+      contact.phone,
+    ]),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
 export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [busyOrderId, setBusyOrderId] = useState<string | null>(null);
+  const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const searchTerm = searchQuery.trim().toLowerCase();
+  const filteredOrders = useMemo(() => {
+    if (!searchTerm) {
+      return orders;
+    }
+
+    return orders.filter((order) => getOrderSearchText(order).includes(searchTerm));
+  }, [orders, searchTerm]);
+  const hasSearchQuery = searchTerm.length > 0;
 
   const fetchOrders = async (adminPassword = password) => {
     setIsLoading(true);
@@ -157,6 +199,44 @@ export default function AdminPage() {
       );
     } finally {
       setBusyOrderId(null);
+    }
+  };
+
+  const deleteBooking = async (order: AdminOrder) => {
+    const customerName = order.customer?.full_name ?? "this booking";
+    const confirmed = window.confirm(
+      `Delete booking for ${customerName}? This cannot be undone.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingOrderId(order.id);
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch(`/api/admin/orders/${order.id}`, {
+        method: "DELETE",
+        headers: {
+          "x-admin-password": password,
+        },
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.error ?? "Could not delete booking.");
+      }
+
+      setOrders((currentOrders) =>
+        currentOrders.filter((currentOrder) => currentOrder.id !== order.id)
+      );
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Could not delete booking."
+      );
+    } finally {
+      setDeletingOrderId(null);
     }
   };
 
@@ -263,146 +343,204 @@ export default function AdminPage() {
           </section>
         ) : (
           <section className="space-y-5">
-            {orders.length === 0 ? (
+            <div className="rounded-3xl border border-border/60 bg-card p-4 shadow-xl shadow-primary/5 sm:p-5">
+              <label
+                htmlFor="admin-booking-search"
+                className="mb-2 block text-sm text-muted-foreground"
+              >
+                Search bookings
+              </label>
+              <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                <div className="relative flex-1">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    id="admin-booking-search"
+                    type="search"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    className="h-12 w-full rounded-2xl border border-border bg-white py-3 pl-11 pr-12 text-sm outline-none transition-colors focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+                    placeholder="Name, phone, plate, city, order ID..."
+                  />
+                  {hasSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                      aria-label="Clear booking search"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+                <p className="shrink-0 text-sm text-muted-foreground">
+                  {hasSearchQuery
+                    ? `${filteredOrders.length} of ${orders.length} bookings`
+                    : `${orders.length} bookings`}
+                </p>
+              </div>
+            </div>
+
+            {filteredOrders.length === 0 ? (
               <div className="rounded-3xl border border-border/60 bg-card p-8 text-center shadow-xl shadow-primary/5">
                 <PackageCheck className="mx-auto mb-4 h-10 w-10 text-muted-foreground" />
-                <h2 className="text-2xl">No orders yet</h2>
+                <h2 className="text-2xl">
+                  {hasSearchQuery ? "No matching bookings" : "No orders yet"}
+                </h2>
                 <p className="mt-2 text-muted-foreground">
-                  New Safe Safar signup orders will appear here.
+                  {hasSearchQuery
+                    ? "Try another name, phone number, plate, city, or order ID."
+                    : "New Safe Safar signup orders will appear here."}
                 </p>
               </div>
             ) : (
-              orders.map((order) => (
-                <article
-                  key={order.id}
-                  className="rounded-3xl border border-border/60 bg-card p-4 shadow-xl shadow-primary/5 sm:p-6"
-                >
-                  <div className="mb-5 flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-start lg:justify-between">
-                    <div className="min-w-0">
-                      <p className="mb-2 break-all font-mono text-xs text-muted-foreground">
-                        {order.id}
-                      </p>
-                      <h2 className="text-2xl">
-                        {order.customer?.full_name ?? "Unknown customer"}
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        Created {formatDate(order.createdAt)}
-                      </p>
-                    </div>
+              filteredOrders.map((order) => {
+                const isDeleting = deletingOrderId === order.id;
+                const isOrderBusy = busyOrderId === order.id || isDeleting;
 
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                      {order.vehicle?.id && (
+                return (
+                  <article
+                    key={order.id}
+                    className="rounded-3xl border border-border/60 bg-card p-4 shadow-xl shadow-primary/5 sm:p-6"
+                  >
+                    <div className="mb-5 flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-start lg:justify-between">
+                      <div className="min-w-0">
+                        <p className="mb-2 break-all font-mono text-xs text-muted-foreground">
+                          {order.id}
+                        </p>
+                        <h2 className="text-2xl">
+                          {order.customer?.full_name ?? "Unknown customer"}
+                        </h2>
+                        <p className="text-sm text-muted-foreground">
+                          Created {formatDate(order.createdAt)}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                        {order.vehicle?.id && (
+                          <button
+                            type="button"
+                            onClick={() => void printSticker(order.vehicle!.id)}
+                            disabled={isOrderBusy}
+                            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-accent px-5 py-3 text-sm text-accent-foreground shadow-lg shadow-accent/20 transition-shadow hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-70"
+                          >
+                            <Download className="h-4 w-4" />
+                            Download/Print Sticker
+                          </button>
+                        )}
+                        <select
+                          value={order.orderStatus}
+                          onChange={(event) =>
+                            void updateOrderStatus(order.id, event.target.value)
+                          }
+                          disabled={isOrderBusy}
+                          className="h-12 rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-primary/40 disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                          {ADMIN_STATUSES.map((status) => (
+                            <option key={status} value={status}>
+                              {status}
+                            </option>
+                          ))}
+                        </select>
                         <button
                           type="button"
-                          onClick={() => void printSticker(order.vehicle!.id)}
-                          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-accent px-5 py-3 text-sm text-accent-foreground shadow-lg shadow-accent/20 transition-shadow hover:shadow-xl"
+                          onClick={() => void deleteBooking(order)}
+                          disabled={isOrderBusy}
+                          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/10 px-5 py-3 text-sm text-destructive transition-colors hover:bg-destructive/15 disabled:cursor-not-allowed disabled:opacity-70"
                         >
-                          <Download className="h-4 w-4" />
-                          Download/Print Sticker
+                          <Trash2 className="h-4 w-4" />
+                          {isDeleting ? "Deleting..." : "Delete Booking"}
                         </button>
-                      )}
-                      <select
-                        value={order.orderStatus}
-                        onChange={(event) =>
-                          void updateOrderStatus(order.id, event.target.value)
-                        }
-                        disabled={busyOrderId === order.id}
-                        className="h-12 rounded-2xl border border-border bg-white px-4 text-sm outline-none focus:border-primary/40 disabled:cursor-not-allowed disabled:opacity-70"
-                      >
-                        {ADMIN_STATUSES.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 lg:grid-cols-3">
-                    <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4">
-                      <h3 className="mb-3 text-sm uppercase text-muted-foreground">
-                        Customer
-                      </h3>
-                      <div className="space-y-2 text-sm">
-                        <p>Phone: {order.customer?.phone ?? "N/A"}</p>
-                        <p>Email: {order.customer?.email ?? "N/A"}</p>
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4">
-                      <h3 className="mb-3 text-sm uppercase text-muted-foreground">
-                        Vehicle
-                      </h3>
-                      <div className="space-y-2 text-sm">
-                        <p>Color: {order.vehicle?.car_color ?? "N/A"}</p>
-                        <p>Brand: {order.vehicle?.car_brand ?? "N/A"}</p>
-                        <p>Model: {order.vehicle?.car_model ?? "N/A"}</p>
-                        <p>Plate: {order.vehicle?.number_plate ?? "N/A"}</p>
-                      </div>
-                    </div>
-
-                    <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4">
-                      <h3 className="mb-3 text-sm uppercase text-muted-foreground">
-                        Delivery
-                      </h3>
-                      <div className="space-y-2 text-sm">
-                        <p>{order.addressLine1}</p>
-                        {order.addressLine2 && <p>{order.addressLine2}</p>}
-                        <p>
-                          {order.city}, {order.postcode}
-                        </p>
-                        <p>Amount: Rs. {order.amount}</p>
-                        <p>Payment: {formatPaymentMethod(order.paymentMethod)}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                    <div className="rounded-2xl border border-border/60 bg-white p-4">
-                      <h3 className="mb-3 text-sm uppercase text-muted-foreground">
-                        Status
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        <span
-                          className={`rounded-full border px-3 py-1.5 text-sm ${statusClass(
-                            order.orderStatus
-                          )}`}
-                        >
-                          Order: {order.orderStatus}
-                        </span>
-                        <span
-                          className={`rounded-full border px-3 py-1.5 text-sm ${statusClass(
-                            order.subscriptionStatus
-                          )}`}
-                        >
-                          Subscription: {order.subscriptionStatus}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="rounded-2xl border border-border/60 bg-white p-4">
-                      <h3 className="mb-3 text-sm uppercase text-muted-foreground">
-                        Emergency Contacts
-                      </h3>
-                      {order.emergencyContacts.length > 0 ? (
+                    <div className="grid gap-4 lg:grid-cols-3">
+                      <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4">
+                        <h3 className="mb-3 text-sm uppercase text-muted-foreground">
+                          Customer
+                        </h3>
                         <div className="space-y-2 text-sm">
-                          {order.emergencyContacts.map((contact) => (
-                            <p key={contact.id}>
-                              {contact.name}
-                              {contact.relationship ? ` (${contact.relationship})` : ""}:{" "}
-                              {contact.phone}
-                            </p>
-                          ))}
+                          <p>Phone: {order.customer?.phone ?? "N/A"}</p>
+                          <p>Email: {order.customer?.email ?? "N/A"}</p>
                         </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">
-                          No emergency contacts.
-                        </p>
-                      )}
+                      </div>
+
+                      <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4">
+                        <h3 className="mb-3 text-sm uppercase text-muted-foreground">
+                          Vehicle
+                        </h3>
+                        <div className="space-y-2 text-sm">
+                          <p>Color: {order.vehicle?.car_color ?? "N/A"}</p>
+                          <p>Brand: {order.vehicle?.car_brand ?? "N/A"}</p>
+                          <p>Model: {order.vehicle?.car_model ?? "N/A"}</p>
+                          <p>Plate: {order.vehicle?.number_plate ?? "N/A"}</p>
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4">
+                        <h3 className="mb-3 text-sm uppercase text-muted-foreground">
+                          Delivery
+                        </h3>
+                        <div className="space-y-2 text-sm">
+                          <p>{order.addressLine1}</p>
+                          {order.addressLine2 && <p>{order.addressLine2}</p>}
+                          <p>
+                            {order.city}, {order.postcode}
+                          </p>
+                          <p>Amount: Rs. {order.amount}</p>
+                          <p>Payment: {formatPaymentMethod(order.paymentMethod)}</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))
+
+                    <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                      <div className="rounded-2xl border border-border/60 bg-white p-4">
+                        <h3 className="mb-3 text-sm uppercase text-muted-foreground">
+                          Status
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          <span
+                            className={`rounded-full border px-3 py-1.5 text-sm ${statusClass(
+                              order.orderStatus
+                            )}`}
+                          >
+                            Order: {order.orderStatus}
+                          </span>
+                          <span
+                            className={`rounded-full border px-3 py-1.5 text-sm ${statusClass(
+                              order.subscriptionStatus
+                            )}`}
+                          >
+                            Subscription: {order.subscriptionStatus}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-border/60 bg-white p-4">
+                        <h3 className="mb-3 text-sm uppercase text-muted-foreground">
+                          Emergency Contacts
+                        </h3>
+                        {order.emergencyContacts.length > 0 ? (
+                          <div className="space-y-2 text-sm">
+                            {order.emergencyContacts.map((contact) => (
+                              <p key={contact.id}>
+                                {contact.name}
+                                {contact.relationship
+                                  ? ` (${contact.relationship})`
+                                  : ""}:{" "}
+                                {contact.phone}
+                              </p>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No emergency contacts.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })
             )}
           </section>
         )}
